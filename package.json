@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
- "scripts": {
+  "scripts": {
     "dev": "tsc --noEmit && tsx --watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js"
@@ -16,12 +16,15 @@
     "@prisma/client": "^6.11.1",
     "@types/express": "^5.0.3",
     "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.9",
+    "@types/jsonwebtoken": "^9.0.10",
     "prisma": "^6.11.1",
     "tsx": "^4.20.3"
   }
