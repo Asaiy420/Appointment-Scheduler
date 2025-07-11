@@ -25,6 +25,7 @@ model User {
   updatedAt      DateTime   @updatedAt
   patient        Patient?
   doctor         Doctor?
+  doctorApplication DoctorApplication?
 
   }
 
@@ -50,6 +51,17 @@ model Doctor {
   updatedAt         DateTime   @updatedAt
   appointments      Appointment[]
 } 
+model DoctorApplication {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+  specialization  String
+  experienceYears String
+  status          ApplicationStatus @default(PENDING)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  reviewedAt      DateTime?
+}
 
 
 model Appointment {
@@ -76,4 +88,9 @@ enum Status {
   PENDING
   CONFIRMED
   CANCELLED
+}
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
