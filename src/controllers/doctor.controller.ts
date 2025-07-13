@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import prisma from "../config/db";
 
+interface DoctorProps {
+  specialization?: string;
+  experienceYears?: string;
+}
+
 export const getAllDoctors = async (
   req: Request,
   res: Response
@@ -49,5 +54,46 @@ export const getDoctorById = async (
   } catch (e) {
     console.error("Error in getDoctorById controller", e);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const updateDoctor = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { specialization, experienceYears } = req.body;
+
+    const updatedDoctor: DoctorProps = {};
+
+    if (specialization !== undefined)
+      updatedDoctor.specialization = specialization;
+    if (experienceYears !== undefined)
+      updatedDoctor.experienceYears = experienceYears;
+
+    const existingDoctor = await prisma.doctor.findUnique({
+      where: { id },
+    });
+
+    if (!existingDoctor) {
+      res.status(404).json({ error: "Doctor not found" });
+      return;
+    }
+
+    const updatedDoctorData = await prisma.doctor.update({
+      where: { id },
+      data: updatedDoctor,
+    });
+
+    res.status(200).json({
+      message: "Doctor updated successfully",
+      data: updatedDoctorData,
+    });
+
+    return;
+  } catch (e) {
+    console.error("Error in updateDoctor controller", e);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
