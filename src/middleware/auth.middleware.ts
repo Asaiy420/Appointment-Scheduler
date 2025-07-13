@@ -49,3 +49,51 @@ export const doctorRoute = async (
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const adminRoute = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader?.startsWith("Bearer ")) {
+      res.status(401).json({
+        error: "Unauthorized access",
+      });
+      return;
+    }
+
+    const token = authHeader.split(" ")[1];
+    const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET!;
+
+    const decoded = jwt.verify(token, JWT_ACCESS_SECRET) as JwtPayload;
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: decoded.userId,
+      },
+    });
+
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    if (user.role !== "ADMIN") {
+      res.status(403).json({ error: "Access denied. Admin role required." });
+      return;
+    }
+
+    (req as any).user = user;
+    next();
+  } catch (e) {
+    if (e instanceof jwt.JsonWebTokenError) {
+      res.status(401).json({ error: "Invalid or expired token" });
+      return;
+    }
+    console.error("Error in adminRoute middleware:", e);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
