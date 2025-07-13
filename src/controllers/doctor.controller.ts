@@ -97,3 +97,39 @@ export const updateDoctor = async (
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const deleteDoctor = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { id } = req.params;
+
+  try {
+    if (!id) {
+      res.status(404).json({ error: "ID not found" });
+      return;
+    }
+
+    const existingDoctor = await prisma.doctor.findUnique({
+      where: { id },
+    });
+
+    if (!existingDoctor) {
+      res.status(404).json({ error: "Doctor not found" });
+      return;
+    }
+
+    await prisma.doctor.delete({
+      where: { id },
+    });
+
+    res.status(200).json({
+      message: "Doctor deleted successfully",
+    });
+
+    return;
+  } catch (e) {
+    console.error("Error in deleteDoctor controller", e);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
