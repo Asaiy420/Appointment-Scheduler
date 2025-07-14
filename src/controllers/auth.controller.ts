@@ -113,7 +113,7 @@ export const loginController = async (
       return;
     }
 
-    // remove the password from the response
+    // remove the password from the response for data security
 
     const accessToken = generateAccessToken(user.id);
     const refreshToken = generateRefreshToken(user.id);
